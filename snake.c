@@ -15,6 +15,7 @@ int screen_height = 20;
 
 bool check_collision(vec2 head);
 
+void draw_border(WINDOW *win);
 
 int main(){
 
@@ -28,11 +29,11 @@ int main(){
 
 
   // snake
-  vec2 head = { 0, 0 };
+  vec2 head = { screen_width / 2, screen_height / 2 };
   vec2 dir = { 1, 0};
 
   // berry
-  vec2 berry = { rand() % screen_width, rand() % screen_height};
+  vec2 berry = { rand() % (screen_width - 2) + 1, rand() % (screen_height - 2) + 1};
   
   bool game_over = false;
 
@@ -79,11 +80,12 @@ int main(){
     if (head.x == berry.x && head.y == berry.y){
       score += 1;
 
-      berry.x = rand() % screen_width;
-      berry.y = rand() % screen_height;
+      berry.x = rand() % (screen_width - 2) + 1;
+      berry.y = rand() % (screen_height - 2) + 1;
     }
     // ----- draw ------
     erase();
+    draw_border(win);
     mvaddch(berry.y, berry.x * 2, '@');
 
 
@@ -140,7 +142,7 @@ return 0;
 
 bool check_collision(vec2 head){
   //check wall collision
-  if(head.x < 0 || head.x >= screen_width || head.y < 0 || head.y >= screen_width){
+  if(head.x <= 0 || head.x >= screen_width -1 || head.y <= 0 || head.y >= screen_height - 1){
     return true;
   }
   // check self collision
@@ -150,4 +152,23 @@ bool check_collision(vec2 head){
     }
   }
 return false;
+}
+
+
+void draw_border(WINDOW *win){
+  // draw top and bottom border
+  for(int x = 0; x < screen_width; x++){
+    mvaddch(0, x * 2, '-');
+    mvaddch(screen_height - 1, x * 2, '-');
+  }
+  //draw left and right border
+  for(int y = 1; y < screen_height - 1; y++){
+    mvaddch(y, 0, '|');
+    mvaddch(y, (screen_width - 1) * 2, '|');
+  }
+  // draw corners
+  mvaddch(0, 0, '+');
+  mvaddch(0, (screen_width - 1) * 2, '+');
+  mvaddch(screen_height -1, 0, '+');
+  mvaddch(screen_height - 1, (screen_width - 1) * 2, '+');
 }
